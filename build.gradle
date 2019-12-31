@@ -16,7 +16,7 @@ configurations {
 }
 
 bootJar {
-	archiveFileName = "users.jar"
+	archiveFileName = "user-api.jar"
 }
 
 repositories {
