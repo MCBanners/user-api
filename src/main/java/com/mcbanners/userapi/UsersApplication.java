@@ -1,4 +1,4 @@
-package com.mcbanners.users;
+package com.mcbanners.userapi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
