@@ -1,24 +1,30 @@
 package com.mcbanners.userapi.controller;
 
-import com.mcbanners.userapi.entity.User;
-import com.mcbanners.userapi.repository.UserRepository;
-import org.mindrot.jbcrypt.BCrypt;
+import com.mcbanners.userapi.persistence.entity.User;
+import com.mcbanners.userapi.persistence.repo.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("user")
 public class UserController {
     private final UserRepository repository;
+    private final PasswordEncoder encoder;
 
-    public UserController(UserRepository repository) {
+    @Autowired
+    public UserController(PasswordEncoder encoder, UserRepository repository) {
+        this.encoder = encoder;
         this.repository = repository;
     }
 
-    @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/sign-up", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<User> addUser(@RequestParam String username, @RequestParam String email, @RequestParam String password) {
         User user = repository.findByUsernameOrEmail(username, email);
         if (user != null) {
@@ -29,7 +35,7 @@ public class UserController {
         user = new User();
         user.setUsername(username);
         user.setEmail(email);
-        user.setPasswordHash(BCrypt.hashpw(password, BCrypt.gensalt()));
+        user.setPassword(encoder.encode(password));
         user = repository.save(user);
 
 
@@ -38,5 +44,10 @@ public class UserController {
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to create new user.");
         }
+    }
+
+    @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<User> getMe(Principal principal) {
+        return new ResponseEntity<>(repository.findByUsername(principal.getName()), HttpStatus.OK);
     }
 }
