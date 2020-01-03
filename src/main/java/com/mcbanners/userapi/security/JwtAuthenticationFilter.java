@@ -52,6 +52,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
+        response.setStatus(200);
 
         PrintWriter writer = response.getWriter();
         writer.print(new ObjectMapper().writeValueAsString(Collections.singletonMap("token", token)));
