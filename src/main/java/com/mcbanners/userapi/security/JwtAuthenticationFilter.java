@@ -28,7 +28,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         this.manager = manager;
         this.provider = provider;
 
-        setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/user/sign-in", "POST"));
+        setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/user/login", "POST"));
     }
 
     @Override

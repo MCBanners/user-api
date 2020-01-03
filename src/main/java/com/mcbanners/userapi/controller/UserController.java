@@ -24,7 +24,7 @@ public class UserController {
         this.repository = repository;
     }
 
-    @PostMapping(value = "/sign-up", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/signup", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<User> addUser(@RequestParam String username, @RequestParam String email, @RequestParam String password) {
         User user = repository.findByUsernameOrEmail(username, email);
         if (user != null) {
