@@ -1,6 +1,7 @@
 package com.mcbanners.userapi.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mcbanners.userapi.security.jwt.JwtHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,13 +21,14 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private final AuthenticationManager manager;
-    private final JwtProvider provider;
+public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+    private final AuthenticationManager authenticationManager;
+    private final JwtHandler jwtHandler;
 
-    public JwtAuthenticationFilter(AuthenticationManager manager, JwtProvider provider) {
-        this.manager = manager;
-        this.provider = provider;
+    @Autowired
+    public JwtUsernameAndPasswordAuthenticationFilter(AuthenticationManager authenticationManager, JwtHandler jwtHandler) {
+        this.authenticationManager = authenticationManager;
+        this.jwtHandler = jwtHandler;
 
         setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/user/login", "POST"));
     }
@@ -36,7 +38,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String passedUsername = request.getParameter("username");
         String passedPassword = request.getParameter("password");
 
-        return manager.authenticate(
+        return authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         passedUsername,
                         passedPassword,
@@ -48,11 +50,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         User user = (User) authResult.getPrincipal();
-        String token = provider.createToken(user.getUsername());
+        String token = jwtHandler.createToken(user.getUsername());
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
         response.setStatus(200);
+        response.addHeader(jwtHandler.getHeader(), jwtHandler.getPrefix() + token);
 
         PrintWriter writer = response.getWriter();
         writer.print(new ObjectMapper().writeValueAsString(Collections.singletonMap("token", token)));
