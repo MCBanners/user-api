@@ -1,10 +1,10 @@
 package com.mcbanners.userapi.security;
 
+import com.mcbanners.userapi.persistence.repo.UserRepository;
 import com.mcbanners.userapi.persistence.svc.UserDetailsServiceImpl;
 import com.mcbanners.userapi.security.jwt.JwtHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,11 +19,13 @@ import javax.servlet.http.HttpServletResponse;
 
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
+    private UserRepository userRepository;
     private UserDetailsServiceImpl userDetailsService;
     private JwtHandler jwtHandler;
 
     @Autowired
-    public WebSecurity(UserDetailsServiceImpl userDetailsService, JwtHandler jwtHandler) {
+    public WebSecurity(UserRepository userRepository, UserDetailsServiceImpl userDetailsService, JwtHandler jwtHandler) {
+        this.userRepository = userRepository;
         this.userDetailsService = userDetailsService;
         this.jwtHandler = jwtHandler;
     }
@@ -35,10 +37,9 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .and()
                 .exceptionHandling().authenticationEntryPoint((req, res, err) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED))
                 .and()
-                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtHandler))
+                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(userRepository, authenticationManager(), jwtHandler))
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, jwtHandler.getUri()).permitAll()
-                .anyRequest().authenticated();
+                .anyRequest().permitAll();
     }
 
     @Override

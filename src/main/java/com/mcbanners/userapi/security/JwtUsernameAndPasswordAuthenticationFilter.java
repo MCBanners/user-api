@@ -1,6 +1,7 @@
 package com.mcbanners.userapi.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mcbanners.userapi.persistence.repo.UserRepository;
 import com.mcbanners.userapi.security.jwt.JwtHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -22,11 +23,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+    private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtHandler jwtHandler;
 
     @Autowired
-    public JwtUsernameAndPasswordAuthenticationFilter(AuthenticationManager authenticationManager, JwtHandler jwtHandler) {
+    public JwtUsernameAndPasswordAuthenticationFilter(UserRepository userRepository, AuthenticationManager authenticationManager, JwtHandler jwtHandler) {
+        this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
         this.jwtHandler = jwtHandler;
 
@@ -50,15 +53,46 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         User user = (User) authResult.getPrincipal();
+
+
+        com.mcbanners.userapi.persistence.entity.User mcbUser = userRepository.findByUsername(user.getUsername());
         String token = jwtHandler.createToken(user.getUsername());
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
         response.setStatus(200);
-        response.addHeader(jwtHandler.getHeader(), jwtHandler.getPrefix() + token);
 
         PrintWriter writer = response.getWriter();
-        writer.print(new ObjectMapper().writeValueAsString(Collections.singletonMap("token", token)));
+        writer.print(new ObjectMapper().writeValueAsString(new SuccessfulAuthentication(mcbUser, token)));
         writer.flush();
+    }
+
+    private static class SuccessfulAuthentication {
+        private com.mcbanners.userapi.persistence.entity.User user;
+        private String token;
+
+        public SuccessfulAuthentication() {
+        }
+
+        public SuccessfulAuthentication(com.mcbanners.userapi.persistence.entity.User user, String token) {
+            this.user = user;
+            this.token = token;
+        }
+
+        public com.mcbanners.userapi.persistence.entity.User getUser() {
+            return user;
+        }
+
+        public void setUser(com.mcbanners.userapi.persistence.entity.User user) {
+            this.user = user;
+        }
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
     }
 }

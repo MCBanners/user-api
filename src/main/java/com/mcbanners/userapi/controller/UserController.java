@@ -48,11 +48,6 @@ public class UserController {
         }
     }
 
-    @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> getMe(Principal principal) {
-        return new ResponseEntity<>(repository.findByUsername(principal.getName()), HttpStatus.OK);
-    }
-
     @GetMapping(value = "/resource/username/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Boolean>> usernameAvailable(@PathVariable String username) {
         return new ResponseEntity<>(
