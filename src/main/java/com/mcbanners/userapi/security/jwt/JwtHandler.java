@@ -1,5 +1,6 @@
 package com.mcbanners.userapi.security.jwt;
 
+import com.mcbanners.userapi.persistence.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,13 +12,7 @@ import java.util.Date;
 
 @Component
 public class JwtHandler {
-    @Value("${security.jwt.uri:/user/**}")
-    private String uri;
-    @Value("${security.jwt.header:Authorization}")
-    private String header;
-    @Value("${security.jwt.prefix:Bearer }")
-    private String prefix;
-    @Value("${security.jwt.expiration:#{24 * 60 * 60}}")
+    @Value("${security.jwt.expiration:#{24 * 60 * 60 * 1000}}")
     private long expiration;
     @Value("${security.jwt.secret:secret}")
     private String secret;
@@ -29,8 +24,9 @@ public class JwtHandler {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String createToken(String subject) {
-        Claims claims = Jwts.claims().setSubject(subject);
+    public String createToken(User user) {
+        Claims claims = Jwts.claims().setSubject(user.getUsername());
+        claims.put("id", user.getId().toString());
 
         Date now = new Date();
         Date expiration = new Date(now.getTime() + this.expiration);
@@ -41,25 +37,5 @@ public class JwtHandler {
                 .setExpiration(expiration)
                 .signWith(this.secretKey, SignatureAlgorithm.HS512)
                 .compact();
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public String getHeader() {
-        return header;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public long getExpiration() {
-        return expiration;
-    }
-
-    public String getSecret() {
-        return secret;
     }
 }
