@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.util.Collections;
+import java.util.Map;
 
 @RestController
 @RequestMapping("user")
@@ -46,8 +48,19 @@ public class UserController {
         }
     }
 
-    @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> getMe(Principal principal) {
-        return new ResponseEntity<>(repository.findByUsername(principal.getName()), HttpStatus.OK);
+    @GetMapping(value = "/resource/username/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Boolean>> usernameAvailable(@PathVariable String username) {
+        return new ResponseEntity<>(
+                Collections.singletonMap("available", !repository.existsByUsername(username)),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping(value = "/resource/email/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Boolean>> emailAvailable(@PathVariable String email) {
+        return new ResponseEntity<>(
+                Collections.singletonMap("available", !repository.existsByEmail(email)),
+                HttpStatus.OK
+        );
     }
 }
