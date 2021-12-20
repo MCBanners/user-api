@@ -62,4 +62,11 @@ public class UserController {
                 HttpStatus.OK
         );
     }
+
+    @GetMapping(value = "/session/validate", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Boolean>> validate() {
+        // basically, if this method gets called then the session is valid; it would get stopped earlier in the pipeline otherwise
+        // the body is not necessary, but is consistent with other validity checks throughout the project
+        return new ResponseEntity<>(Collections.singletonMap("valid", true), HttpStatus.OK);
+    }
 }
