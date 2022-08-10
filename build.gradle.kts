@@ -25,7 +25,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
-	implementation("com.github.ben-manes.caffeine:caffeine:3.1.1")
+	implementation("com.github.ben-manes.caffeine:caffeine:2.9.3")
 	implementation("org.flywaydb:flyway-core:6.5.7")
 	implementation("org.mindrot:jbcrypt:0.4")
 	implementation("io.jsonwebtoken:jjwt-api:0.11.2")
