@@ -28,7 +28,7 @@ dependencies {
 	implementation("com.github.ben-manes.caffeine:caffeine:2.9.3")
 	implementation("org.flywaydb:flyway-core:6.5.7")
 	implementation("org.mindrot:jbcrypt:0.4")
-	implementation("io.jsonwebtoken:jjwt-api:0.11.2")
+	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
