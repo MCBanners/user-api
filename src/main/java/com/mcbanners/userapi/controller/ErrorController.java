@@ -1,6 +1,7 @@
 package com.mcbanners.userapi.controller;
 
 import org.springframework.boot.autoconfigure.web.servlet.error.AbstractErrorController;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,9 +12,8 @@ import java.util.Collections;
 import java.util.Map;
 
 @RestController
-@RequestMapping(ErrorController.ERROR_PATH)
+@RequestMapping("/error")
 public class ErrorController extends AbstractErrorController {
-    protected static final String ERROR_PATH = "/error";
 
     public ErrorController(ErrorAttributes errorAttributes) {
         super(errorAttributes, Collections.emptyList());
@@ -22,13 +22,8 @@ public class ErrorController extends AbstractErrorController {
     @RequestMapping
     public ResponseEntity<Map<String, Object>> error(HttpServletRequest req) {
         return new ResponseEntity<>(
-                getErrorAttributes(req, false),
+                getErrorAttributes(req, ErrorAttributeOptions.of(ErrorAttributeOptions.Include.MESSAGE)),
                 getStatus(req)
         );
-    }
-
-    @Override
-    public String getErrorPath() {
-        return ERROR_PATH;
     }
 }
