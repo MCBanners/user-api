@@ -25,7 +25,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
-	implementation("com.github.ben-manes.caffeine:caffeine:3.1.6")
+	implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 	implementation("org.mariadb.jdbc:mariadb-java-client:3.1.4")
 	implementation("org.flywaydb:flyway-mysql:9.17.0")
 	implementation("org.mindrot:jbcrypt:0.4")
