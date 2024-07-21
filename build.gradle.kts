@@ -28,7 +28,7 @@ dependencies {
 	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 	implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 	implementation("org.mariadb.jdbc:mariadb-java-client:3.1.4")
-	implementation("org.flywaydb:flyway-mysql:9.17.0")
+	implementation("org.flywaydb:flyway-mysql:9.22.3")
 	implementation("org.mindrot:jbcrypt:0.4")
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 
